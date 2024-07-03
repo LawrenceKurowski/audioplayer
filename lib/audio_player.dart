@@ -7,20 +7,23 @@ class audioPlayerWidget extends StatefulWidget {
 
   final AudioPlayer audioPlayer;
 
+  void onPlay() {
+    audioPlayer.play(AssetSource("0.mp3"));
+  }
+
+  void onStop() {
+    audioPlayer.stop();
+  }
+
   @override
   _audioPlayerWidgetState createState() => _audioPlayerWidgetState();
 }
 
 class _audioPlayerWidgetState extends State<audioPlayerWidget> {
-  void onPlay() {
-    // Add your code here
-  }
   void onPause() {
     // Add your code here
   }
-  void onStop() {
-    // Add your code here
-  }
+
   void onSliderChanged(double value) {
     // Add your code here
   }
@@ -34,7 +37,7 @@ class _audioPlayerWidgetState extends State<audioPlayerWidget> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () => onPlay,
+              onPressed: widget.onPlay,
               child: Text('Play'),
             ),
             ElevatedButton(
@@ -42,7 +45,7 @@ class _audioPlayerWidgetState extends State<audioPlayerWidget> {
               child: Text('Pause'),
             ),
             ElevatedButton(
-              onPressed: () => onStop,
+              onPressed: widget.onStop,
               child: Text('Stop'),
             ),
           ],
