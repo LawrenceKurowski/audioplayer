@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'audio_player.dart';
+
+AudioPlayer audioPlayer = AudioPlayer();
 
 void main() {
-  runApp(const MainApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MainApp(audioPlayer: audioPlayer));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  const MainApp({required this.audioPlayer, super.key});
+
+  final AudioPlayer audioPlayer;
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp(
+      home: audioPlayerWidget(audioPlayer: audioPlayer),
     );
   }
 }
