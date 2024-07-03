@@ -21,6 +21,9 @@ class _audioPlayerWidgetState extends State<audioPlayerWidget> {
   void onStop() {
     // Add your code here
   }
+  void onSliderChanged(double value) {
+    // Add your code here
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,5 +49,13 @@ class _audioPlayerWidgetState extends State<audioPlayerWidget> {
         ),
       ),
     );
+  }
+
+  Widget slider() {
+    return Slider(
+        value: 0, //_position.inSeconds.toDouble(),
+        min: 0.0,
+        max: 0, //_duration.inSeconds.toDouble(),
+        onChanged: onSliderChanged);
   }
 }
