@@ -7,25 +7,36 @@ class audioPlayerWidget extends StatefulWidget {
 
   final AudioPlayer audioPlayer;
 
-  void onPlay() {
-    audioPlayer.play(AssetSource("0.mp3"));
-  }
-
-  void onStop() {
-    audioPlayer.stop();
-  }
-
   @override
   _audioPlayerWidgetState createState() => _audioPlayerWidgetState();
 }
 
 class _audioPlayerWidgetState extends State<audioPlayerWidget> {
-  void onPause() {
+  void onSliderChanged(double value) {
     // Add your code here
   }
 
-  void onSliderChanged(double value) {
-    // Add your code here
+  late Future<double> durationFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.audioPlayer.onPlayerStateChanged.listen((state) {
+      setState(() {
+        isPlaying = state == PlayerState.playing;
+      });
+    });
+    widget.audioPlayer.onDurationChanged.listen((newDuration) {
+      setState(() {
+        duration = newDuration;
+      });
+    });
+
+    widget.audioPlayer.onPositionChanged.listen((newPosition) {
+      setState(() {
+        position = newPosition;
+      });
+    });
   }
 
   @override
@@ -36,17 +47,20 @@ class _audioPlayerWidgetState extends State<audioPlayerWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: widget.onPlay,
-              child: Text('Play'),
-            ),
-            ElevatedButton(
-              onPressed: () => onPause,
-              child: Text('Pause'),
-            ),
-            ElevatedButton(
-              onPressed: widget.onStop,
-              child: Text('Stop'),
+            slider(),
+            CircleAvatar(
+              radius: 35,
+              child: IconButton(
+                  icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                  iconSize: 50,
+                  onPressed: () {
+                    if (isPlaying) {
+                      widget.audioPlayer.pause();
+                    } else {
+                      widget.audioPlayer.play(AssetSource("0.mp3"));
+                    }
+                    ;
+                  }),
             ),
           ],
         ),
@@ -54,11 +68,28 @@ class _audioPlayerWidgetState extends State<audioPlayerWidget> {
     );
   }
 
+  bool isPlaying = false;
+  Duration duration = Duration.zero;
+  Duration position = Duration.zero;
+
+  String formatLabel(_position) {
+    return "${_position.inSeconds.toString()}:${(_position.inMilliseconds / 100).toInt().toString()}";
+  }
+
   Widget slider() {
     return Slider(
-        value: 0, //_position.inSeconds.toDouble(),
-        min: 0.0,
-        max: 0, //_duration.inSeconds.toDouble(),
-        onChanged: onSliderChanged);
+      value:
+          position.inMilliseconds.toDouble(), //_position.inSeconds.toDouble(),
+      min: 0.0,
+      divisions: 100,
+      max: duration.inMilliseconds.toDouble(),
+      label: formatLabel(position),
+      onChanged: (value) {
+        setState(() {
+          position = Duration(milliseconds: value.toInt());
+        });
+        widget.audioPlayer.seek(Duration(milliseconds: value.toInt()));
+      },
+    );
   }
 }
